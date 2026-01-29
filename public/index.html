@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>công cụ xây dựng đề</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/style.css"> 
+
+    <style>
+        /* Khung bao quanh 1 Chủ đề lớn */
+        .topic-wrapper {
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            overflow: hidden;
+        }
+        
+        /* Header của Chủ đề lớn */
+        .topic-header-row {
+            background: #eff6ff; /* Màu xanh nhạt */
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        
+        /* Container chứa các bài học con */
+        .units-container {
+            padding: 15px;
+            background: #fff;
+        }
+        
+        /* Dòng Đơn vị kiến thức con */
+        .unit-item {
+            display: grid;
+            grid-template-columns: 1fr 100px 100px 40px; /* Nội dung | Tiết 1 | Tiết 2 | Xóa */
+            gap: 10px;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px dashed #e2e8f0;
+            background: #f8fafc;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .unit-item:hover { background: #f1f5f9; }
+        .unit-item:last-child { margin-bottom: 0; }
+
+        /* Nút thêm Unit */
+        .btn-add-unit {
+            width: 100%;
+            border: 2px dashed #cbd5e1;
+            color: #64748b;
+            margin-top: 0;
+            background: white;
+        }
+        .btn-add-unit:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: #eff6ff;
+        }
+
+        /* Responsive cho mobile */
+        @media (max-width: 768px) {
+            .unit-item {
+                grid-template-columns: 1fr 40px; /* Gom nhóm input lại */
+                grid-template-rows: auto auto;
+                gap: 5px;
+            }
+            .hk-input-1, .hk-input-2 { grid-column: 1 / -1; }
+        }
+           
+    /* Ép hiển thị xuống dòng cho nội dung trong bảng */
+    .preview-content table td, 
+    .preview-content table th {
+        white-space: pre-wrap; /* Quan trọng: Hiển thị \n thành xuống dòng */
+        word-wrap: break-word; /* Ngắt dòng nếu từ quá dài */
+        vertical-align: top;
+        padding: 8px;
+    }
+
+    /* Định dạng riêng cho các đáp án trắc nghiệm để dễ nhìn */
+    .preview-content p {
+        margin-bottom: 5px;
+    }
+    </style>
+    
+    <script src="https://cdn.jsdelivr.net/npm/temml/dist/temml.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/temml/dist/temml.css" rel="stylesheet">
+   <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+
+   <header class="app-header">
+    <div class="header-content">
+        <div class="brand">
+            <div class="logo-icon"><i class="fas fa-brain"></i></div>
+            <div class="brand-text">
+                <h1>
+                    <a href="https://genedu.pages.dev" style="text-decoration: none; color: inherit;">GenEdu</a>
+                </h1>
+                <span class="badge">TESTTOOL7991_1.0</span>
+            </div>
+                      <nav class="nav-area">
+                <a href="https://genedu.pages.dev/" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="guide.html" class="nav-link">
+                    <i class="fas fa-book-open"></i> Hướng dẫn
+                </a>
+            </nav>
+        </div>
+    </div>
+</header>
+
+    <main class="main-container">
+        
+        <div class="intro-section">
+            <h2>Công cụ Xây Dựng Ma Trận & Đề Kiểm Tra</h2>
+            <p>Chuẩn Công văn 7991/BGDĐT-GDTrH.</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><i class="fas fa-sliders-h"></i> 1. Cấu Hình Chung</div>
+            <div class="card-body">
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label>Môn học</label>
+                        <input type="text" id="subject" placeholder="Ví dụ: KHTN" value="">
+                    </div>
+                    <div class="form-group">
+                        <label>Lớp</label>
+                        <input type="text" id="grade" placeholder="Ví dụ: 9" value="">
+                    </div>
+                    <div class="form-group">
+                        <label style="color: #d97706; font-weight: bold;">Bộ sách</label>
+                        <select id="book_series" style="border: 2px solid #d97706;">
+                            <option value="Kết nối tri thức với cuộc sống">Kết nối tri thức</option>
+                            <option value="Chân trời sáng tạo">Chân trời sáng tạo</option>
+                            <option value="Cánh diều">Cánh diều</option>
+                            <option value="Tự do">Tự do / Chung</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label>Học kì</label>
+                        <select id="semester">
+                            <option value="1">Học kì 1</option>
+                            <option value="2">Học kì 2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Loại kiểm tra</label>
+                        <select id="exam_type">
+                            <option value="gk">Giữa kì (Định kì)</option>
+                            <option value="hk">Cuối kì (Học kì)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Thời lượng</label>
+                        <select id="time_limit">
+                            <option value="45">45 phút</option>
+                            <option value="60">60 phút</option>
+                            <option value="90">90 phút</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" id="use_short">
+                        <span class="checkmark"></span>
+                        <span class="label-text">Có sử dụng câu hỏi "Trả lời ngắn"</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-list-ol"></i> 2. Nội dung kiến thức
+            </div>
+            <div class="card-body">
+                <div id="topics-container"></div>
+                
+                <button class="btn btn-primary" id="btnAddTopic" style="margin-top: 20px;">
+                    <i class="fas fa-folder-plus"></i> THÊM CHỦ ĐỀ / CHƯƠNG MỚI
+                </button>
+            </div>
+        </div>
+
+        <div class="license-card">
+            <div class="license-icon"><i class="fas fa-key"></i></div>
+            <div class="license-input">
+                <label>Mã kích hoạt phần mềm</label>
+                <input type="text" id="license_key" placeholder="Nhập mã License Key...">
+            </div>
+        </div>
+
+        <div class="action-area">
+            <button class="btn btn-primary btn-lg" id="btnGenerate">
+                <i class="fas fa-magic"></i> BẮT ĐẦU TẠO DỮ LIỆU
+            </button>
+            <div id="loadingMsg" class="loading-state hidden">
+                <div class="spinner"></div>
+                <span>Đang xử lý dữ liệu... Vui lòng đợi...</span>
+            </div>
+            <div id="errorMsg" class="error-box hidden"></div>
+        </div>
+
+        <div id="previewSection" class="card preview-card hidden">
+            <div class="card-header header-flex">
+                <div class="header-title">
+                    <i class="fas fa-check-circle"></i> Kết quả xử lý
+                </div>
+                <div class="header-actions">
+                    <button class="btn-copy" id="btnCopy" title="Sao chép toàn bộ bảng">
+                        <i class="fas fa-copy"></i> <span>Sao chép</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <div class="preview-scroll-area">
+                    <div id="previewContent" class="preview-content"></div>
+                </div>
+                <div class="preview-footer">
+                    <button class="btn btn-success btn-lg" id="btnDownloadWord">
+                        <i class="fas fa-file-word"></i> TẢI VỀ MÁY (.DOCX)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+   <footer class="app-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>GenEdu</h3>
+                <p>Công cụ hỗ trợ xây dựng ma trận và đề kiểm tra chuẩn Công văn 7991/BGDĐT-GDTrH.</p>
+                <p>Phát triển bởi Văn Hiến.</p>
+            </div>
+
+            <div class="footer-section">
+                <h3></h3>
+                <a href="https://www.facebook.com/nung.hien" target="_blank" class="social-link facebook">
+                    <i class="fab fa-facebook"></i>Facebook
+                </a>
+                <a href="https://m.me/nung.hien" target="_blank" class="social-link messenger">
+                    <i class="fab fa-facebook-messenger"></i> Nhắn tin hỗ trợ
+                </a>
+            </div>
+
+            <div class="footer-section">
+                <h3>Hỗ trợ qua Zalo</h3>
+                <div class="qr-box">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://zalo.me/0914329178" alt="Zalo QR Code">
+                    <p>Quét mã để chat ngay</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © 2025 GenEdu. All rights reserved.
+        </div>
+    </footer>
+    <template id="topic-template">
+        <div class="topic-wrapper">
+            <div class="topic-header-row">
+                <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-folder-open" style="color: var(--primary);"></i>
+                    <input type="text" class="topic-name" placeholder="Tên Chương / Chủ đề lớn (Ví dụ: Chương 1 - Chất)..." 
+                           style="font-weight: 700; border: 1px solid #cbd5e1; padding: 8px; border-radius: 6px; width: 100%;">
+                </div>
+                <button class="remove-topic-btn btn-icon-danger" title="Xóa toàn bộ chương này"><i class="fas fa-trash-alt"></i></button>
+            </div>
+            
+            <div class="units-container">
+                </div>
+
+            <div style="padding: 0 15px 15px;">
+                <button class="btn-add-unit btn btn-outline">
+                    <i class="fas fa-plus"></i> Thêm Đơn vị kiến thức / Bài học
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <template id="unit-template">
+        <div class="unit-item">
+            <div style="flex-grow: 1;">
+                <input type="text" class="unit-content" placeholder="Tên bài học / Đơn vị kiến thức chi tiết..." style="width: 100%;">
+            </div>
+            
+            <div class="hk-input-1 hidden" style="width: 110px;">
+                <input type="number" class="unit-p1" placeholder="Nửa đầu kì" min="0" 
+                       style="text-align: center; border: 1px solid #f59e0b; font-weight: bold;"
+                       title="Nhập số tiết dạy nửa đầu kì">
+            </div>
+
+            <div class="hk-input-2 hidden" style="width: 110px;">
+                <input type="number" class="unit-p2" placeholder="Tiết nửa sau" min="0" 
+                       style="text-align: center;"
+                       title="Số tiết dạy ở nửa sau học kì">
+            </div>
+
+            <div style="width: 40px; text-align: center;">
+                <button class="remove-unit-btn" style="color: #ef4444; border: none; background: none; cursor: pointer;" title="Xóa bài này">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        // Khai báo biến toàn cục ở đây để tránh lỗi Reference
+        window.generatedHTML = "";
+    </script>
+    <script src="js/app.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

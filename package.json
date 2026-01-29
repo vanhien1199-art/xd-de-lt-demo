@@ -1,0 +1,15 @@
+{
+  "name": "gemini-exam-generator",
+  "version": "1.1.0",
+  "description": "Tạo đề thi chính xác với Gemini 2.x/3.x",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

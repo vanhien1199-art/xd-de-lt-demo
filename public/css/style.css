@@ -1,0 +1,368 @@
+/* File: public/css/style.css */
+
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --secondary: #64748b;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --bg-body: #f1f5f9;
+    --bg-card: #ffffff;
+    --border: #e2e8f0;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --radius: 12px;
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    line-height: 1.5;
+    font-size: 15px;
+}
+
+/* HEADER */
+.app-header {
+    background: var(--bg-card);
+    padding: 1rem 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    position: sticky; top: 0; z-index: 100;
+}
+.header-content {
+    max-width: 900px; margin: 0 auto; padding: 0 20px;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.logo-icon {
+    width: 40px; height: 40px; background: var(--primary);
+    color: white; border-radius: 10px; display: flex;
+    align-items: center; justify-content: center; font-size: 1.2rem;
+}
+.brand-text h1 { font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin: 0; }
+.badge {
+    background: #dbeafe; color: var(--primary);
+    font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; font-weight: 600;
+}
+/* --- BẮT ĐẦU ĐOẠN CẦN THÊM --- */
+
+/* Class này giúp đẩy Logo sang trái và Menu sang phải */
+.header-inner {
+    display: flex;              /* Kích hoạt Flexbox */
+    align-items: center;        /* Căn giữa dọc */
+    width: 100%;               /* QUAN TRỌNG: Bắt buộc khung phải rộng 100% */
+    max-width: 1200px;         /* (Tùy chọn) Giới hạn chiều rộng cho đẹp */
+    margin: 0 auto;            /* Căn giữa màn hình */
+    }
+.nav-area {
+    margin-left: auto; /* QUYỀN LỰC NHẤT: Tự động đẩy toàn bộ khối này sang phải cùng */
+    display: flex;     /* Để các nút con bên trong nằm ngang */
+    align-items: center;
+}
+/* Tinh chỉnh khu vực chứa các nút Menu (Trang chủ, Hướng dẫn) */
+.nav-area {
+    display: flex;
+    align-items: center;
+}
+
+/* Tạo khoảng cách giữa các nút và làm đẹp link */
+.nav-link {
+    margin-left: 24px;          /* Khoảng cách giữa các nút */
+    text-decoration: none;      /* Bỏ gạch chân */
+    color: var(--text-muted);   /* Màu chữ mặc định */
+    font-weight: 600;           /* Chữ đậm vừa */
+    transition: color 0.2s;     /* Hiệu ứng chuyển màu mượt */
+    display: flex;
+    align-items: center;
+    gap: 6px;                   /* Khoảng cách giữa icon và chữ */
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--primary);      /* Đổi màu xanh khi di chuột vào */
+}
+
+/* --- KẾT THÚC ĐOẠN CẦN THÊM --- */
+
+/* MAIN LAYOUT */
+.main-container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+
+.intro-section { text-align: center; margin-bottom: 30px; }
+.intro-section h2 { font-size: 2rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem; }
+.intro-section p { color: var(--text-muted); font-size: 1.1rem; }
+
+/* CARDS */
+.card {
+    background: var(--bg-card); border-radius: var(--radius);
+    box-shadow: var(--shadow); margin-bottom: 24px; overflow: hidden;
+    border: 1px solid var(--border);
+}
+.card-header {
+    padding: 16px 24px; background: #f8fafc; border-bottom: 1px solid var(--border);
+    font-weight: 600; color: var(--text-main); font-size: 1.1rem;
+    display: flex; align-items: center; gap: 10px;
+}
+.card-header i { color: var(--primary); }
+.card-body { padding: 24px; }
+
+/* GRID SYSTEM */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+/* FORMS */
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; font-weight: 500; margin-bottom: 6px; font-size: 0.95rem; }
+input[type="text"], input[type="number"], select, textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1;
+    border-radius: 8px; font-size: 15px; transition: border 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+}
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary); outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+textarea { resize: vertical; min-height: 80px; }
+
+/* TOPIC ITEM */
+.topic-item {
+    background: #f8fafc; border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; margin-bottom: 16px;
+    position: relative; transition: transform 0.2s;
+}
+.topic-item:hover { border-color: #cbd5e1; }
+.topic-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.btn-icon-danger { background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px; font-size: 1rem; opacity: 0.7; }
+.btn-icon-danger:hover { opacity: 1; transform: scale(1.1); }
+
+/* BUTTONS */
+.btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s; border: none; font-size: 1rem; gap: 8px;
+}
+.btn-primary { background: var(--primary); color: white; width: 100%; }
+.btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.btn-outline { background: white; border: 1px dashed #cbd5e1; color: var(--text-muted); width: 100%; }
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); background: #f0f9ff; }
+.btn-success { background: var(--success); color: white; }
+.btn-success:hover { background: #15803d; }
+.btn-lg { height: 56px; font-size: 1.1rem; }
+
+/* LICENSE CARD */
+.license-card {
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+    border: 2px solid #bfdbfe; border-radius: var(--radius);
+    padding: 24px; margin-bottom: 30px;
+    display: flex; align-items: center; gap: 20px;
+}
+.license-icon {
+    width: 50px; height: 50px; background: #dbeafe; color: var(--primary);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+}
+.license-input { flex: 1; }
+.license-input input {
+    font-family: monospace; font-size: 1.25rem; font-weight: 700;
+    text-align: center; color: var(--primary-dark); letter-spacing: 2px;
+    border-color: #60a5fa; height: 50px;
+}
+
+/* UTILS */
+.hidden { display: none !important; }
+.highlight-box {
+    background: #fff7ed; border: 1px dashed #fdba74; padding: 16px;
+    border-radius: 8px; margin-top: 15px;
+}
+.box-title { font-weight: 600; color: #c2410c; margin-bottom: 12px; font-size: 0.9rem; }
+
+/* LOADING */
+.loading-state { text-align: center; margin-top: 20px; color: var(--text-muted); }
+.spinner {
+    width: 30px; height: 30px; border: 3px solid #e2e8f0;
+    border-top-color: var(--primary); border-radius: 50%;
+    margin: 0 auto 10px; animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* PREVIEW TABLE CSS (QUAN TRỌNG CHO BẢNG) */
+.preview-content {
+    font-family: "Times New Roman", serif; /* Giống Word */
+    background: white; padding: 20px; border: 1px solid #e2e8f0;
+    max-height: 600px; overflow: auto;
+}
+.preview-content table {
+    width: 100%; border-collapse: collapse; margin-bottom: 20px;
+}
+.preview-content th, .preview-content td {
+    border: 1px solid #000 !important; /* Ép viền đen */
+    padding: 6px; font-size: 14px; text-align: left; vertical-align: top;
+}
+.preview-content th { background: #f3f4f6; text-align: center; font-weight: bold; }
+.preview-content h2, .preview-content h3 { 
+    text-align: center; color: #000; margin: 20px 0 10px; font-weight: bold;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .license-card { flex-direction: column; text-align: center; }
+    .container { padding: 20px 15px; }
+}
+/* === FOOTER STYLES === */
+.app-footer {
+    background-color: #1e293b; /* Màu nền tối sang trọng */
+    color: #f8fafc;
+    padding-top: 40px;
+    margin-top: 50px;
+}
+
+.footer-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* Chia 3 cột đều nhau */
+    gap: 30px;
+    padding: 0 20px 40px;
+}
+
+.footer-section h3 {
+    color: #38bdf8; /* Màu xanh sáng cho tiêu đề */
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.footer-section p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+/* Social Links */
+.social-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #f8fafc;
+    text-decoration: none;
+    margin-bottom: 12px;
+    font-weight: 500;
+    transition: all 0.2s;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+}
+
+.social-link:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateX(5px);
+}
+
+.social-link.facebook i { color: #1877f2; font-size: 1.2rem; }
+.social-link.messenger i { color: #0084ff; font-size: 1.2rem; }
+
+/* Zalo QR */
+.qr-box {
+    text-align: center;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.qr-box img {
+    width: 120px;
+    height: 120px;
+    display: block;
+}
+
+.qr-box p {
+    color: #0f172a;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 5px 0 0;
+}
+
+/* Footer Bottom */
+.footer-bottom {
+    background: #0f172a;
+    text-align: center;
+    padding: 15px;
+    font-size: 0.85rem;
+    color: #64748b;
+    border-top: 1px solid #334155;
+}
+
+/* Responsive cho Mobile */
+@media (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: 1fr; /* Về 1 cột trên điện thoại */
+        text-align: center;
+    }
+    
+    .social-link {
+        justify-content: center;
+    }
+}
+/* File: public/css/style.css */
+
+/* ... (CSS cũ giữ nguyên) ... */
+
+/* === HEADER FLEX & COPY BUTTON === */
+.header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f0fdf4 !important; /* Màu nền xanh nhẹ */
+    border-bottom: 1px solid #bbf7d0 !important;
+}
+
+.header-title {
+    color: #166534;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Nút Copy Chuyên nghiệp */
+.btn-copy {
+    background-color: white;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.btn-copy:hover {
+    background-color: #f1f5f9;
+    color: #2563eb;
+    border-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+.btn-copy:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.btn-copy i {
+    font-size: 1rem;
+}
+
+/* Trạng thái sau khi copy thành công (dùng JS để toggle class này) */
+.btn-copy.copied {
+    background-color: #16a34a;
+    color: white;
+    border-color: #16a34a;
+}
