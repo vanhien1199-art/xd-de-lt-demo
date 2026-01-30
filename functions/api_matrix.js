@@ -561,7 +561,7 @@ if (finalSolution) {
       const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel(
         { model: 'gemini-2.0-flash-001' },
-        { baseUrl: 'https://gateway.ai.cloudflare.com/v1/a59c0991f0b291394bbe2fca8ba2694f/genedu-gateway/google-ai-studio' }
+        { baseUrl: 'https://gateway.ai.cloudflare.com/v1/a59c0991f0b291394bbe2fca8ba2694f/hien-demo/google-ai-studio' }
       );
 
       const result = await model.generateContentStream({
@@ -634,6 +634,7 @@ if (finalSolution) {
     }
   }
 }
+
 
 
 
