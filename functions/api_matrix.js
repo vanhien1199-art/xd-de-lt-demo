@@ -560,7 +560,7 @@ if (finalSolution) {
       
       const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel(
-        { model: 'gemini-3-pro-preview' },
+        { model: 'gemini-2.0-pro' },
         { baseUrl: 'https://gateway.ai.cloudflare.com/v1/a59c0991f0b291394bbe2fca8ba2694f/genedu-gateway/google-ai-studio' }
       );
 
@@ -634,6 +634,7 @@ if (finalSolution) {
     }
   }
 }
+
 
 
 
