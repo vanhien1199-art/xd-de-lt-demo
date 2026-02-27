@@ -521,6 +521,10 @@ if (finalSolution) {
 	4. **Cấm ảo giác (Anti-Hallucination):**
    - KHÔNG bịa đặt số liệu, tên nhà khoa học hoặc các sự kiện lịch sử không có thật.
    - Nếu yêu cầu tạo đề có câu hỏi trắc nghiệm, các đáp án nhiễu phải có tính logic, không được vô lý hoặc gây hiểu lầm.
+   	5. **Quy tắc về Hình ảnh (TUYỆT ĐỐI TUÂN THỦ):**
+   - TUYỆT ĐỐI KHÔNG sử dụng thẻ <img>, không chèn link ảnh (URL) tự bịa.
+   - Nếu câu hỏi bắt buộc phải có hình ảnh (như mạch điện, đồ thị, sơ đồ), hãy chuyển nó thành mô tả bằng lời. (Ví dụ thay vì vẽ hình, hãy viết: "Cho mạch điện gồm điện trở R1 mắc nối tiếp với R2").
+   - Nếu không thể mô tả bằng lời, hãy đặt một ghi chú rõ ràng bằng text để giáo viên tự chèn ảnh: **[GIÁO VIÊN CHÈN HÌNH ẢNH VÀO ĐÂY]**.
    
    ### YÊU CẦU ĐẶC BIỆT CHO PHẦN "TRẢ LỜI NGẮN" (STRICT CONCISENESS):
 	1. **Nguyên tắc "Siêu Ngắn" (Zero-Fluff Policy):**
@@ -677,6 +681,7 @@ if (finalSolution) {
     }
   }
 }
+
 
 
 
