@@ -21,9 +21,11 @@ export async function onRequest(context) {
       if (!apiKey) throw new Error("Thiếu API Key");
 
       const body = await request.json();
+      // Bổ sung lấy tham số step và previous_html từ yêu cầu
       let { 
           license_key, topics, subject, grade, semester, 
-          exam_type, time, use_short_answer, book_series 
+          exam_type, time, use_short_answer, book_series,
+          step, previous_html
       } = body;
 
       const timeInt = parseInt(time);
@@ -319,55 +321,26 @@ if (finalSolution) {
 		4. NO MARKDOWN FORMATTING (NO \`\`\`html).
 		[USER REQUEST START]:
 		`;
-      // 6. TẠO PROMPT VỚI CẤU TRÚC 19 CỘT BẮT BUỘC
-      const prompt =SYSTEM_RULES + `
+      
+      // 6. TẠO PROMPT TÁCH LÀM 2 BƯỚC
+      let prompt = "";
+
+      if (step === 1 || !step) { // BƯỚC 1: CHỈ TẠO MA TRẬN VÀ ĐẶC TẢ
+          prompt = SYSTEM_RULES + `
      Bạn là chuyên gia khảo thí hàng đầu Việt Nam. Bạn am hiểu sâu sắc sách giáo khoa ${book_series} lớp 6, lớp 7, lớp 8, lớp 9, lớp 10, lớp 11, lớp 12 và chương trình giáo dục phổ thông 2018 (Ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT ngày 26 tháng 12 năm 2018 của Bộ trưởng Bộ Giáo dục và Đào tạo).
-	 Nhiệm vụ của bạn là Chuyển dữ liệu đã tính toán thành HTML và xây dựng bản đặc tả đề kiểm tra, đề kiểm tra & hướng dẫn chấm theo các yêu cầu dưới đây.
+	 Nhiệm vụ của bạn là Chuyển dữ liệu đã tính toán thành HTML và xây dựng bản đặc tả đề kiểm tra theo các yêu cầu dưới đây.
+
       **QUY TẮC BẤT DI BẤT DỊCH:**
       1. **TUYỆT ĐỐI KHÔNG TÍNH TOÁN LẠI:** Chỉ được phép lấy các con số trong phần "DỮ LIỆU ĐÃ TÍNH" để điền vào bảng.
       2. **QUAN HỆ CHẶT CHẼ (LOGIC DÂY CHUYỀN):**
          - **Bản đặc tả (Phần 2)** phải khớp 100% số liệu với **Ma trận (Phần 1)**.
-         - **Đề thi (Phần 3)** phải khớp 100% với **Bản đặc tả (Phần 2)**.
-         - (Ví dụ: Ma trận có 1 câu MCQ Biết bài A -> Đặc tả phải ghi hành vi Biết bài A -> Đề thi phải có câu đó).
       3. **KHÔNG** nói chuyện phím. Bắt đầu ngay bằng mã HTML.
-	  **NGUYÊN TẮC:**
-      1. KHÔNG được dừng lại khi chưa hoàn thành đủ 3 phần.
+	  
+      **NGUYÊN TẮC:**
+      1. KHÔNG được dừng lại khi chưa hoàn thành đủ 2 phần (Ma trận và Bản đặc tả).
       2. KHÔNG nói chuyện phím. Chỉ xuất HTML.
       3. Dùng số liệu ĐÃ TÍNH SẴN ở dưới, KHÔNG tự tính lại.
 
-      ## YÊU CẦU ĐẶC BIỆT VỀ NGUỒN KIẾN THỨC (TUÂN THỦ TUYỆT ĐỐI):
-     ## YÊU CẦU VỀ NGUỒN KIẾN THỨC (TUÂN THỦ TUYỆT ĐỐI):
-	1. **Ràng buộc Nguồn (Source-Grounded):**
-   - CHỈ ĐƯỢC PHÉP sử dụng các khái niệm, dữ kiện đã xuất hiện trong phần "DỮ LIỆU NỘI DUNG".
-   - NẾU phần dữ liệu cung cấp quá sơ sài, bạn CHỈ ĐƯỢC phép mở rộng dựa trên kiến thức chuẩn của bộ sách ${book_series} lớp ${grade}.
-   - TUYỆT ĐỐI KHÔNG đưa vào các kiến thức của lớp trên hoặc các chủ đề không liên quan (Ví dụ: Không ra đề về Python nếu nội dung là Scratch).
-
-	2. **Chính xác về Thuật ngữ:**
-   - Sử dụng 100% thuật ngữ mới theo danh pháp quốc tế của chương trình 2018 (Ví dụ: Oxygen, Potassium, Carbon dioxide, Base, Acid, Salt, Joule...).
-
-	3. **Logic Đặc thù môn học:**
-   - Tin học (Lớp 6-9): Tập trung Scratch và thuật toán cơ bản.
-   - Tin học (Lớp 10-12): Tập trung Python, Cấu trúc dữ liệu và AI cơ bản.
-   - Ngoại ngữ: Từ vựng và cấu trúc câu phải tương đương bậc năng lực yêu cầu cho lớp ${grade}.
-
-	4. **Cấm ảo giác (Anti-Hallucination):**
-   - KHÔNG bịa đặt số liệu, tên nhà khoa học hoặc các sự kiện lịch sử không có thật.
-   - Nếu yêu cầu tạo đề có câu hỏi trắc nghiệm, các đáp án nhiễu phải có tính logic, không được vô lý hoặc gây hiểu lầm.
-   ### YÊU CẦU ĐẶC BIỆT CHO PHẦN "TRẢ LỜI NGẮN" (STRICT CONCISENESS):
-	1. **Nguyên tắc "Siêu Ngắn" (Zero-Fluff Policy):**
-	   - Cắt bỏ hoàn toàn lời dẫn dắt, bối cảnh, giả định không cần thiết (Ví dụ: Bỏ "Trong phòng thí nghiệm...", bỏ "Một học sinh thực hiện thí nghiệm...").
-	   - **Cấu trúc bắt buộc:** "Cho [Dữ kiện]. Tính/Tìm [Yêu cầu]."
-	   - Độ dài tối đa: **Không quá 2 câu** hoặc **dưới 30 từ** cho mỗi câu hỏi.
-
-	2. **Ví dụ mẫu (Hãy làm theo phong cách này):**
-	   - *SAI (Quá dài):* "Một chiếc xe ô tô có khối lượng là 1000kg đang chuyển động trên đường thẳng với vận tốc 10m/s. Hãy tính động năng của xe."
-	   - *ĐÚNG (Chuẩn):* "Một ô tô 1000 kg chuyển động với tốc độ 10 m/s. Tính động năng của xe."
-	   - *ĐÚNG (Chuẩn):* "Tính pH của dung dịch HCl 0,01M."
-
-	3. **Định dạng đáp án (Nếu là điền khuyết):**
-   	- Câu hỏi phải được thiết kế để đáp án là một **con số cụ thể** hoặc một **từ/cụm từ duy nhất**. Không ra câu hỏi mở.
-	# CẢNH BÁO
-			Nếu bạn vi phạm bất kỳ quy tắc nào ở trên (đặc biệt là việc lấy nhầm kiến thức lớp khác hoặc dùng thuật ngữ cũ), nội dung của bạn sẽ bị loại bỏ hoàn toàn.
       ### DỮ LIỆU ĐÃ TÍNH (Sử dụng số liệu này):
       ${matrixRows}
 
@@ -448,7 +421,7 @@ if (finalSolution) {
       </table>
       \`\`\`
 
-      ### OUTPUT YÊU CẦU 2: BẢN ĐẶC TẢ & ĐỀ THI (16 CỘT)
+      ### OUTPUT YÊU CẦU 2: BẢN ĐẶC TẢ (16 CỘT)
    <hr>
       <h2 style="color:blue">PHẦN 2: BẢN ĐẶC TẢ ĐỀ KIỂM TRA</h2>
       <table border="1" style="border-collapse:collapse; width:100%; text-align:center;">
@@ -505,6 +478,75 @@ if (finalSolution) {
                 </tfoot>
             </table>
 		- ** Cột 4: **Yêu cầu cần đạt** (Mô tả chi tiết kiến thức/kỹ năng cần kiểm tra cho từng mức độ Biết/Hiểu/Vận dụng, mỗi ý xuống dòng bằng thẻ '<br>').
+      
+      **IV. QUY ĐỊNH KỸ THUẬT (BẮT BUỘC):**
+			1. **Định dạng:** Chỉ trả về mã **HTML Table** ('<table border="1">...</table>') cho các bảng.
+            2. **Không dùng Markdown:** Tuyệt đối không dùng \`\`\`html\`\`\` hoặc |---| .
+            3. **Xuống dòng (QUAN TRỌNG):**
+               - Trong HTML, ký tự xuống dòng (\n) không có tác dụng. **BẮT BUỘC phải dùng thẻ '<br>'** để ngắt dòng.
+      `;
+      } 
+      else if (step === 2) { // BƯỚC 2: CHỈ TẠO ĐỀ THI VÀ ĐÁP ÁN DỰA VÀO BƯỚC 1
+          if (!previous_html) {
+              return new Response(JSON.stringify({ error: "Thiếu dữ liệu (previous_html) từ Bước 1" }), { status: 400, headers: corsHeaders });
+          }
+
+          prompt = SYSTEM_RULES + `
+      Bạn là chuyên gia khảo thí hàng đầu Việt Nam. Bạn am hiểu sâu sắc sách giáo khoa ${book_series} lớp 6, lớp 7, lớp 8, lớp 9, lớp 10, lớp 11, lớp 12 và chương trình giáo dục phổ thông 2018 (Ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT ngày 26 tháng 12 năm 2018 của Bộ trưởng Bộ Giáo dục và Đào tạo).
+	  Nhiệm vụ của bạn là xây dựng đề kiểm tra & hướng dẫn chấm theo các yêu cầu dưới đây dựa vào Ma trận và Bản đặc tả từ Bước 1.
+      
+      **QUY TẮC BẤT DI BẤT DỊCH:**
+      1. **QUAN HỆ CHẶT CHẼ (LOGIC DÂY CHUYỀN):**
+         - **Đề thi (Phần 3)** phải khớp 100% với **Bản đặc tả và Ma trận** đã được cấp.
+         - (Ví dụ: Ma trận có 1 câu MCQ Biết bài A -> Đặc tả phải ghi hành vi Biết bài A -> Đề thi phải có câu đó).
+      2. **KHÔNG** nói chuyện phím. Bắt đầu ngay bằng mã HTML.
+	  
+      **NGUYÊN TẮC:**
+      1. KHÔNG được dừng lại khi chưa hoàn thành phần Đề thi và Đáp án.
+      2. KHÔNG nói chuyện phím. Chỉ xuất HTML.
+
+     ## YÊU CẦU VỀ NGUỒN KIẾN THỨC (TUÂN THỦ TUYỆT ĐỐI):
+	1. **Ràng buộc Nguồn (Source-Grounded):**
+   - NẾU phần dữ liệu cung cấp quá sơ sài, bạn CHỈ ĐƯỢC phép mở rộng dựa trên kiến thức chuẩn của bộ sách ${book_series} lớp ${grade}.
+   - TUYỆT ĐỐI KHÔNG đưa vào các kiến thức của lớp trên hoặc các chủ đề không liên quan (Ví dụ: Không ra đề về Python nếu nội dung là Scratch).
+
+	2. **Chính xác về Thuật ngữ:**
+   - Sử dụng 100% thuật ngữ mới theo danh pháp quốc tế của chương trình 2018 (Ví dụ: Oxygen, Potassium, Carbon dioxide, Base, Acid, Salt, Joule...).
+
+	3. **Logic Đặc thù môn học:**
+   - Tin học (Lớp 6-9): Tập trung Scratch và thuật toán cơ bản.
+   - Tin học (Lớp 10-12): Tập trung Python, Cấu trúc dữ liệu và AI cơ bản.
+   - Ngoại ngữ: Từ vựng và cấu trúc câu phải tương đương bậc năng lực yêu cầu cho lớp ${grade}.
+
+	4. **Cấm ảo giác (Anti-Hallucination):**
+   - KHÔNG bịa đặt số liệu, tên nhà khoa học hoặc các sự kiện lịch sử không có thật.
+   - Nếu yêu cầu tạo đề có câu hỏi trắc nghiệm, các đáp án nhiễu phải có tính logic, không được vô lý hoặc gây hiểu lầm.
+   
+   ### YÊU CẦU ĐẶC BIỆT CHO PHẦN "TRẢ LỜI NGẮN" (STRICT CONCISENESS):
+	1. **Nguyên tắc "Siêu Ngắn" (Zero-Fluff Policy):**
+	   - Cắt bỏ hoàn toàn lời dẫn dắt, bối cảnh, giả định không cần thiết (Ví dụ: Bỏ "Trong phòng thí nghiệm...", bỏ "Một học sinh thực hiện thí nghiệm...").
+	   - **Cấu trúc bắt buộc:** "Cho [Dữ kiện]. Tính/Tìm [Yêu cầu]."
+	   - Độ dài tối đa: **Không quá 2 câu** hoặc **dưới 30 từ** cho mỗi câu hỏi.
+
+	2. **Ví dụ mẫu (Hãy làm theo phong cách này):**
+	   - *SAI (Quá dài):* "Một chiếc xe ô tô có khối lượng là 1000kg đang chuyển động trên đường thẳng với vận tốc 10m/s. Hãy tính động năng của xe."
+	   - *ĐÚNG (Chuẩn):* "Một ô tô 1000 kg chuyển động với tốc độ 10 m/s. Tính động năng của xe."
+	   - *ĐÚNG (Chuẩn):* "Tính pH của dung dịch HCl 0,01M."
+
+	3. **Định dạng đáp án (Nếu là điền khuyết):**
+   	- Câu hỏi phải được thiết kế để đáp án là một **con số cụ thể** hoặc một **từ/cụm từ duy nhất**. Không ra câu hỏi mở.
+	
+    # CẢNH BÁO
+			Nếu bạn vi phạm bất kỳ quy tắc nào ở trên (đặc biệt là việc lấy nhầm kiến thức lớp khác hoặc dùng thuật ngữ cũ), nội dung của bạn sẽ bị loại bỏ hoàn toàn.
+      
+      ### DỮ LIỆU MA TRẬN VÀ BẢN ĐẶC TẢ TỪ BƯỚC 1 (Cần bám sát tuyệt đối):
+      ${previous_html}
+
+      ### THÔNG TIN:
+      - Môn: ${subject} - Lớp ${grade} - Bộ sách: ${book_series}
+      - Cấu trúc: ${structureInfo}
+      - Hệ số: ${scoreDetails}
+
       <hr>
       <h2 style="color:blue">PHẦN 3: ĐỀ KIỂM TRA</h2>
 	  <h2 style="color:blue">MÔN:${subject} - Lớp ${grade}</h2>
@@ -554,7 +596,8 @@ if (finalSolution) {
 		- KHÔNG viết lời dẫn.
 		- KHÔNG giải thích lại ma trận.
 		- Tập trung vào nội dung đề thi ngay lập tức.
-			   `;
+      `;
+      }
 
       // 7. GỌI API QUA GATEWAY & LOGIC TRỪ TIỀN TỐI ƯU (CHẠY NGẦM)
       
@@ -569,9 +612,9 @@ if (finalSolution) {
           generationConfig: {
               temperature: 0.1,
               maxOutputTokens: 8192,
-              topP: 0.8, // Đã sửa vị trí dấu ngoặc tại đây
+              topP: 0.8,
               topK: 10
-          } // Đóng generationConfig đúng vị trí
+          }
       });
 
       const { readable, writable } = new TransformStream();
@@ -586,8 +629,8 @@ if (finalSolution) {
                   let text = chunk.text(); 
                   
                   if (text) {
-                      // Logic trừ tiền chạy ngầm bằng waitUntil để tối ưu hiệu suất
-                      if (!hasDeducted && env.TEST_TOOL && license_key) {
+                      // BỔ SUNG: CHỈ TRỪ TIỀN KHI LÀ BƯỚC 2 HOẶC TRƯỜNG HỢP KHÔNG CHIA BƯỚC
+                      if ((step === 2 || !step) && !hasDeducted && env.TEST_TOOL && license_key) {
                           hasDeducted = true; 
                           context.waitUntil((async () => {
                               try {
@@ -634,37 +677,3 @@ if (finalSolution) {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
