@@ -83,6 +83,7 @@ function addUnit(container) {
 }
 
 // --- GENERATE DATA (API CALL) ---
+// --- GENERATE DATA (API CALL) ---
 async function handleGenerate() {
     const btn = document.getElementById('btnGenerate');
     const loading = document.getElementById('loadingMsg');
@@ -143,42 +144,92 @@ async function handleGenerate() {
             topics: topicsData 
         };
 
-        const res = await fetch('/api_matrix', {
+        // Hàm hỗ trợ đọc Stream để tái sử dụng
+        async function readStreamAndAppend(response) {
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let accumulatedHTML = "";
+            
+            while(true) {
+                const {done, value} = await reader.read();
+                if(done) break;
+                
+                let chunk = decoder.decode(value, {stream:true});
+                let cleanChunk = chunk.replace(/```html/g, '').replace(/```/g, '');
+                
+                accumulatedHTML += cleanChunk;
+                // Hiển thị trực tiếp (Streaming) để người dùng thấy hệ thống đang chạy
+                prev.innerHTML += cleanChunk;
+            }
+            return accumulatedHTML;
+        }
+
+        // ==========================================
+        // BƯỚC 1: TẠO MA TRẬN VÀ BẢN ĐẶC TẢ
+        // ==========================================
+        loading.innerHTML = '<strong>⏳ Đang tính toán Ma trận và Bản đặc tả (Bước 1/2)...</strong>';
+        requestData.step = 1;
+
+        sec.classList.remove('hidden'); // Mở section để xem stream
+        sec.scrollIntoView({behavior:'smooth'});
+
+        const res1 = await fetch('/api_matrix', {
             method: 'POST', 
             headers: {'Content-Type':'application/json'}, 
             body: JSON.stringify(requestData)
         });
         
-        if(!res.ok) {
-            let t = await res.text(); 
+        if(!res1.ok) {
+            let t = await res1.text(); 
             try { t = JSON.parse(t).error } catch(e){} 
-            throw new Error(`Lỗi Server: ${t}`);
+            throw new Error(`Lỗi Server (Bước 1): ${t}`);
         }
 
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        let fullHTML = "";
-        
-        while(true) {
-            const {done, value} = await reader.read();
-            if(done) break;
-            fullHTML += decoder.decode(value, {stream:true});
-        }
-        
-        // Clean & Format HTML
-        let cleanHTML = fullHTML.replace(/```html/g, '').replace(/```/g, '').trim();
-        // Add bold to A. B. C. D. for better display
-        cleanHTML = cleanHTML.replace(/(\s+)(B\.|C\.|D\.)/g, '<br><b>$2</b>').replace(/(A\.)/g, '<b>$1</b>');
+        let step1HTML = await readStreamAndAppend(res1);
 
-        prev.innerHTML = cleanHTML;
-        window.generatedHTML = cleanHTML;
-        sec.classList.remove('hidden'); 
-        sec.scrollIntoView({behavior:'smooth'});
+        // ==========================================
+        // BƯỚC 2: TẠO ĐỀ THI VÀ ĐÁP ÁN
+        // ==========================================
+        loading.innerHTML = '<strong>🚀 Đang soạn Đề thi và Đáp án (Bước 2/2)... Quá trình này có thể mất 1-2 phút.</strong>';
+        
+        // Thêm đường kẻ phân cách báo hiệu đang làm Bước 2
+        const loadingSeparator = `<br><hr><div style="text-align:center; padding: 20px;"><h3 style="color:#d9534f;">Đang tự động soạn Đề thi dựa trên Ma trận... Vui lòng không đóng trang!</h3></div>`;
+        prev.innerHTML += loadingSeparator;
+
+        requestData.step = 2;
+        requestData.previous_html = step1HTML; // Gửi lại HTML ma trận lên cho AI
+
+        const res2 = await fetch('/api_matrix', {
+            method: 'POST', 
+            headers: {'Content-Type':'application/json'}, 
+            body: JSON.stringify(requestData)
+        });
+
+        if(!res2.ok) {
+            let t = await res2.text(); 
+            try { t = JSON.parse(t).error } catch(e){} 
+            throw new Error(`Lỗi Server (Bước 2): ${t}`);
+        }
+
+        let step2HTML = await readStreamAndAppend(res2);
+
+        // ==========================================
+        // HOÀN TẤT & LÀM SẠCH ĐỊNH DẠNG
+        // ==========================================
+        // Gom toàn bộ HTML lại và làm sạch dòng chữ Loading báo hiệu ở trên
+        let finalHTML = (step1HTML + step2HTML).trim();
+        
+        // Thêm in đậm cho A. B. C. D.
+        finalHTML = finalHTML.replace(/(\s+)(B\.|C\.|D\.)/g, '<br><b>$2</b>').replace(/(A\.)/g, '<b>$1</b>');
+
+        prev.innerHTML = finalHTML;
+        window.generatedHTML = finalHTML;
 
     } catch(e) { 
         error.innerHTML = `<strong>⚠️ Lỗi:</strong> ${e.message}`; 
         error.classList.remove('hidden'); 
     } finally { 
+        loading.innerHTML = 'Đang xử lý dữ liệu...'; // Trả về text mặc định
         loading.classList.add('hidden'); 
         btn.disabled = false; 
     }
@@ -515,3 +566,4 @@ async function handleDownloadWord() {
         btn.disabled = false; 
     }
 }
+
