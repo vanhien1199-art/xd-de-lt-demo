@@ -322,22 +322,19 @@ if (finalSolution) {
 		[USER REQUEST START]:
 		`;
       
-      // 6. TẠO PROMPT TÁCH LÀM 2 BƯỚC
-      let prompt = "";
-
-      if (step === 1 || !step) { // BƯỚC 1: CHỈ TẠO MA TRẬN VÀ ĐẶC TẢ
-          prompt = SYSTEM_RULES + `
+      // 6. TẠO PROMPT VỚI CẤU TRÚC 19 CỘT BẮT BUỘC
+      const prompt =SYSTEM_RULES + `
      Bạn là chuyên gia khảo thí hàng đầu Việt Nam. Bạn am hiểu sâu sắc sách giáo khoa ${book_series} lớp 6, lớp 7, lớp 8, lớp 9, lớp 10, lớp 11, lớp 12 và chương trình giáo dục phổ thông 2018 (Ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT ngày 26 tháng 12 năm 2018 của Bộ trưởng Bộ Giáo dục và Đào tạo).
-	 Nhiệm vụ của bạn là Chuyển dữ liệu đã tính toán thành HTML và xây dựng bản đặc tả đề kiểm tra theo các yêu cầu dưới đây.
-
+	 Nhiệm vụ của bạn là Chuyển dữ liệu đã tính toán thành HTML và xây dựng bản đặc tả đề kiểm tra, đề kiểm tra & hướng dẫn chấm theo các yêu cầu dưới đây.
       **QUY TẮC BẤT DI BẤT DỊCH:**
       1. **TUYỆT ĐỐI KHÔNG TÍNH TOÁN LẠI:** Chỉ được phép lấy các con số trong phần "DỮ LIỆU ĐÃ TÍNH" để điền vào bảng.
       2. **QUAN HỆ CHẶT CHẼ (LOGIC DÂY CHUYỀN):**
          - **Bản đặc tả (Phần 2)** phải khớp 100% số liệu với **Ma trận (Phần 1)**.
+         - **Đề thi (Phần 3)** phải khớp 100% với **Bản đặc tả (Phần 2)**.
+         - (Ví dụ: Ma trận có 1 câu MCQ Biết bài A -> Đặc tả phải ghi hành vi Biết bài A -> Đề thi phải có câu đó).
       3. **KHÔNG** nói chuyện phím. Bắt đầu ngay bằng mã HTML.
-	  
-      **NGUYÊN TẮC:**
-      1. KHÔNG được dừng lại khi chưa hoàn thành đủ 2 phần (Ma trận và Bản đặc tả).
+	  **NGUYÊN TẮC:**
+      1. KHÔNG được dừng lại khi chưa hoàn thành đủ 3 phần.
       2. KHÔNG nói chuyện phím. Chỉ xuất HTML.
       3. Dùng số liệu ĐÃ TÍNH SẴN ở dưới, KHÔNG tự tính lại.
 
@@ -351,7 +348,7 @@ if (finalSolution) {
 
       ### OUTPUT YÊU CẦU 1: MA TRẬN ĐỀ KIỂM TRA (19 CỘT
 	  Yêu cầu bắt buộc: Kết quả trả về dòng đầu tiên phải là:
-      <h2 style="color:#0044cc; text-align:center; text-transform:uppercase;">PHẦN 1: MA TRẬN ĐỀ KIỂM TRA ${exam_type} ${semester} <br> Môn: ${subject} - Lớp ${grade}</h2>
+      <h2 style="color:#0044cc; text-align:center; text-transform:uppercase;">A. MA TRẬN ĐỀ KIỂM TRA ${exam_type} ${semester} <br> Môn: ${subject} - Lớp ${grade}</h2>
      Sau tiêu đề trên,**Hãy điền dữ liệu vào cấu trúc bảng dưới đây*:
 	  ** Yêu cầu tuân thủ tuyệt đối chính xác cấu trúc của bảng*
       \`\`\`html
@@ -421,9 +418,40 @@ if (finalSolution) {
       </table>
       \`\`\`
 
-      ### OUTPUT YÊU CẦU 2: BẢN ĐẶC TẢ (16 CỘT)
+      ### OUTPUT YÊU CẦU 2: BẢN ĐẶC TẢ ĐỀ(16 CỘT)
+	  [CẢNH BÁO TÍNH ĐỒNG BỘ 100% - ĐỌC KỸ VÀ TUÂN THỦ NGHIÊM NGẶT]:
+      1. ĐỒNG BỘ SỐ LIỆU: Số lượng câu hỏi của từng mức độ (Biết/Hiểu/Vận dụng) và từng loại câu (MCQ, ĐS, TLN, TL) ở mỗi bài học BẮT BUỘC PHẢI KHỚP TỪNG CHỮ SỐ với Phần 1 (Ma trận). Nếu Ma trận có 2 câu MCQ Biết ở Bài 1, thì Đặc tả cũng phải ghi đúng số 2 ở cột đó.
+      2. Ma trận có bao nhiêu đơn vị kiến thức, Bản đặc tả phải có chính xác. TUYỆT ĐỐI KHÔNG bỏ sót.
+      3. CÁCH VIẾT CỘT "YÊU CẦU CẦN ĐẠT": CHỈ viết yêu cầu cho những mức độ có số lượng câu hỏi > 0. 
+         - Nếu có câu ở mức Biết: Bắt đầu bằng các động từ "Nêu được", "Nhận biết được", "Kể tên", "Phát biểu được".
+         - Nếu có câu ở mức Hiểu: Bắt đầu bằng "Giải thích được", "Phân biệt được", "Mô tả được", "So sánh được".
+         - Nếu có câu ở mức Vận dụng: Bắt đầu bằng "Tính toán được", "Vận dụng kiến thức để giải quyết", "Xác định được".
+         - Mỗi ý yêu cầu cần đạt tách thành dòng riêng biệt.
+      4. Bắt buộc tính lại Tổng số câu và Tổng điểm ở phần <tfoot> sao cho khớp 100% với Phần 1
+	  ## YÊU CẦU ĐẶC BIỆT VỀ NGUỒN KIẾN THỨC (TUÂN THỦ TUYỆT ĐỐI):
+	1. **Ràng buộc Nguồn (Source-Grounded):**
+   - CHỈ ĐƯỢC PHÉP sử dụng các khái niệm, dữ kiện đã xuất hiện trong phần "DỮ LIỆU NỘI DUNG".
+   - NẾU phần dữ liệu cung cấp quá sơ sài, bạn CHỈ ĐƯỢC phép mở rộng dựa trên kiến thức chuẩn của bộ sách ${book_series} lớp ${grade}.
+   - TUYỆT ĐỐI KHÔNG đưa vào các kiến thức của lớp trên hoặc các chủ đề không liên quan (Ví dụ: Không ra đề về Python nếu nội dung là Scratch).
+	2. **Chính xác về Thuật ngữ:**
+   - Sử dụng 100% thuật ngữ mới theo danh pháp quốc tế của chương trình 2018 (Ví dụ: Oxygen, Potassium, Carbon dioxide, Base, Acid, Salt, Joule...).
+	3. **Logic Đặc thù môn học:**
+   - Tin học (Lớp 6-9): Tập trung Scratch và thuật toán cơ bản.
+   - Tin học (Lớp 10-12): Tập trung Python, Cấu trúc dữ liệu và AI cơ bản.
+   - Ngoại ngữ: Từ vựng và cấu trúc câu phải tương đương bậc năng lực yêu cầu cho lớp ${grade}.
+	4. **Cấm ảo giác (Anti-Hallucination):**
+   - KHÔNG bịa đặt số liệu, tên nhà khoa học hoặc các sự kiện lịch sử không có thật.
+   - Nếu yêu cầu tạo đề có câu hỏi trắc nghiệm, các đáp án nhiễu phải có tính logic, không được vô lý hoặc gây hiểu lầm.
+
+	3. **Định dạng đáp án (Nếu là điền khuyết):**
+   	- Câu hỏi phải được thiết kế để đáp án là một **con số cụ thể** hoặc một **từ/cụm từ duy nhất**. Không ra câu hỏi mở.
+	# CẢNH BÁO
+			Nếu bạn vi phạm bất kỳ quy tắc nào ở trên (đặc biệt là việc lấy nhầm kiến thức lớp khác hoặc dùng thuật ngữ cũ), nội dung của bạn sẽ bị loại bỏ hoàn toàn.
+     4. QUY TẮC VỀ HÌNH ẢNH (ZERO-FAKE-IMAGES):
+         - TUYỆT ĐỐI KHÔNG SỬ DỤNG THẺ <img>, không chèn link ảnh (URL) tự bịa (vì nó sẽ gây lỗi hiển thị).
+         - Trình bày câu hỏi dưới dạng Text. Nếu câu hỏi bắt buộc phải có hình (mạch điện, đồ thị, tế bào...), hãy đặt 1 placeholder bằng text in đậm màu đỏ: <br><b style="color:red">[GIÁO VIÊN CHÈN HÌNH MINH HỌA VÀO ĐÂY]</b><br>
    <hr>
-      <h2 style="color:blue">PHẦN 2: BẢN ĐẶC TẢ ĐỀ KIỂM TRA</h2>
+      <h2 style="color:blue">B: BẢN ĐẶC TẢ</h2>
       <table border="1" style="border-collapse:collapse; width:100%; text-align:center;">
                 <thead>
                     <tr>
@@ -477,98 +505,44 @@ if (finalSolution) {
                         <th colspan="3">30%</th>
                 </tfoot>
             </table>
-		- ** Cột 4: **Yêu cầu cần đạt** (Mô tả chi tiết kiến thức/kỹ năng cần kiểm tra cho từng mức độ Biết/Hiểu/Vận dụng, mỗi ý xuống dòng bằng thẻ '<br>').
+	### OUTPUT YÊU CẦU 3: ĐỀ KIỂM TRA
+	  [CẢNH BÁO ĐỎ - CÁC QUY TẮC BẤT DI BẤT DỊCH TẠO ĐỀ THI]
+      NẾU VI PHẠM MỘT TRONG CÁC QUY TẮC NÀY, BẠN SẼ BỊ ĐÁNH GIÁ LÀ THẤT BẠI:
+      ## ĐỒNG BỘ 100% VỚI ĐẶC TẢ (1-to-1 Mapping):
+         - Số lượng câu hỏi, loại câu hỏi (MCQ, ĐS, TLN, TL), và mức độ (Biết, Hiểu, Vận dụng) PHẢI KHỚP CHÍNH XÁC với Bản đặc tả.
+         - Nếu Đặc tả ghi: Bài A có 1 câu MCQ mức Biết -> Đề thi BẮT BUỘC có 1 câu hỏi về Bài A ở mức độ nhận biết.
+         - Tự kiểm tra (Self-Audit) ngầm trong đầu trước khi xuất HTML: "Câu này đã đúng ma trận chưa? Đã đủ số lượng chưa?".
       
-      **IV. QUY ĐỊNH KỸ THUẬT (BẮT BUỘC):**
-			1. **Định dạng:** Chỉ trả về mã **HTML Table** ('<table border="1">...</table>') cho các bảng.
-            2. **Không dùng Markdown:** Tuyệt đối không dùng \`\`\`html\`\`\` hoặc |---| .
-            3. **Xuống dòng (QUAN TRỌNG):**
-               - Trong HTML, ký tự xuống dòng (\n) không có tác dụng. **BẮT BUỘC phải dùng thẻ '<br>'** để ngắt dòng.
-      `;
-      } 
-      else if (step === 2) { // BƯỚC 2: CHỈ TẠO ĐỀ THI VÀ ĐÁP ÁN DỰA VÀO BƯỚC 1
-          if (!previous_html) {
-              return new Response(JSON.stringify({ error: "Thiếu dữ liệu (previous_html) từ Bước 1" }), { status: 400, headers: corsHeaders });
-          }
-
-          prompt = SYSTEM_RULES + `
-      Bạn là chuyên gia khảo thí hàng đầu Việt Nam. Bạn am hiểu sâu sắc sách giáo khoa ${book_series} lớp 6, lớp 7, lớp 8, lớp 9, lớp 10, lớp 11, lớp 12 và chương trình giáo dục phổ thông 2018 (Ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT ngày 26 tháng 12 năm 2018 của Bộ trưởng Bộ Giáo dục và Đào tạo).
-	  Nhiệm vụ của bạn là xây dựng đề kiểm tra & hướng dẫn chấm theo các yêu cầu dưới đây dựa vào Ma trận và Bản đặc tả từ Bước 1.
-      
-      **QUY TẮC BẤT DI BẤT DỊCH:**
-      1. **QUAN HỆ CHẶT CHẼ (LOGIC DÂY CHUYỀN):**
-         - **Đề thi (Phần 3)** phải khớp 100% với **Bản đặc tả và Ma trận** đã được cấp.
-         - (Ví dụ: Ma trận có 1 câu MCQ Biết bài A -> Đặc tả phải ghi hành vi Biết bài A -> Đề thi phải có câu đó).
-      2. **KHÔNG** nói chuyện phím. Bắt đầu ngay bằng mã HTML.
-	  
-      **NGUYÊN TẮC:**
-      1. KHÔNG được dừng lại khi chưa hoàn thành phần Đề thi và Đáp án.
-      2. KHÔNG nói chuyện phím. Chỉ xuất HTML.
-
-     ## YÊU CẦU VỀ NGUỒN KIẾN THỨC (TUÂN THỦ TUYỆT ĐỐI):
-	1. **Ràng buộc Nguồn (Source-Grounded):**
-   - NẾU phần dữ liệu cung cấp quá sơ sài, bạn CHỈ ĐƯỢC phép mở rộng dựa trên kiến thức chuẩn của bộ sách ${book_series} lớp ${grade}.
-   - TUYỆT ĐỐI KHÔNG đưa vào các kiến thức của lớp trên hoặc các chủ đề không liên quan (Ví dụ: Không ra đề về Python nếu nội dung là Scratch).
-
-	2. **Chính xác về Thuật ngữ:**
-   - Sử dụng 100% thuật ngữ mới theo danh pháp quốc tế của chương trình 2018 (Ví dụ: Oxygen, Potassium, Carbon dioxide, Base, Acid, Salt, Joule...).
-
-	3. **Logic Đặc thù môn học:**
-   - Tin học (Lớp 6-9): Tập trung Scratch và thuật toán cơ bản.
-   - Tin học (Lớp 10-12): Tập trung Python, Cấu trúc dữ liệu và AI cơ bản.
-   - Ngoại ngữ: Từ vựng và cấu trúc câu phải tương đương bậc năng lực yêu cầu cho lớp ${grade}.
-
-	4. **Cấm ảo giác (Anti-Hallucination):**
-   - KHÔNG bịa đặt số liệu, tên nhà khoa học hoặc các sự kiện lịch sử không có thật.
-   - Nếu yêu cầu tạo đề có câu hỏi trắc nghiệm, các đáp án nhiễu phải có tính logic, không được vô lý hoặc gây hiểu lầm.
-   	5. **Quy tắc về Hình ảnh (TUYỆT ĐỐI TUÂN THỦ):**
-   - TUYỆT ĐỐI KHÔNG sử dụng thẻ <img>, không chèn link ảnh (URL) tự bịa.
-   - Nếu câu hỏi bắt buộc phải có hình ảnh (như mạch điện, đồ thị, sơ đồ), hãy chuyển nó thành mô tả bằng lời. (Ví dụ thay vì vẽ hình, hãy viết: "Cho mạch điện gồm điện trở R1 mắc nối tiếp với R2").
-   - Nếu không thể mô tả bằng lời, hãy đặt một ghi chú rõ ràng bằng text để giáo viên tự chèn ảnh: **[GIÁO VIÊN CHÈN HÌNH ẢNH VÀO ĐÂY]**.
-   
-   ### YÊU CẦU ĐẶC BIỆT CHO PHẦN "TRẢ LỜI NGẮN" (STRICT CONCISENESS):
-	1. **Nguyên tắc "Siêu Ngắn" (Zero-Fluff Policy):**
+	  ## CẤU TRÚC ĐỀ THI BẮT BUỘC (PHẦN 3)
+      <hr>
+      <h2 style="color:blue; text-align:center; text-transform:uppercase;">PHẦN 3: ĐỀ KIỂM TRA MÔN ${subject} - LỚP ${grade}</h2>
+      <h3 style="text-align:center;">Thời gian làm bài: ${time} phút</h3>
+	  	[CẢNH BÁO ĐẶC BIỆT VỀ SỐ LƯỢNG - ĐỌC KỸ VÀ TUÂN THỦ NGHIÊM NGẶT]:
+      **I. TRẮC NGHIỆM KHÁCH QUAN**
+      * **Phần 1: Câu trắc nghiệm nhiều phương án lựa chọn (MCQ)**
+      * **Phần 2: Câu trắc nghiệm Đúng/Sai**
+          1. SỐ LƯỢNG CÂU LỚN: Bạn CHỈ ĐƯỢC PHÉP tạo chính xác 2 câu hỏi lớn. TUYỆT ĐỐI KHÔNG tạo 4 câu, không tạo 8 câu. Nếu tạo sai số lượng 2 câu lớn, kết quả sẽ bị hủy.
+          2. SỐ LƯỢNG Ý NHỎ: MỖI câu hỏi lớn BẮT BUỘC phải chứa chính xác 4 phát biểu con, đánh ký hiệu a), b), c), d). (Tổng cộng: 2 câu lớn × 4 ý = 8 ý nhỏ, khớp với tổng số 8 của ma trận).
+          3. CÁCH GOM KIẾN THỨC: Nếu ma trận phân bổ câu Đ/S ở nhiều bài học khác nhau, BẮT BUỘC phải gom nhóm (tổng hợp) kiến thức của các bài đó lại để thiết kế thành 2 tình huống/bối cảnh chung cho 2 câu lớn này. Không được tách lẻ mỗi bài 1 câu.
+          4. ĐỊNH DẠNG HTML BẮT BUỘC (Cho từng câu lớn):
+             - Dòng hướng dẫn (in nghiêng): "Trong mỗi ý a), b), c), d) dưới đây, thí sinh chọn phương án đúng hoặc sai. (Đúng ghi Đ; Sai ghi S)."
+             - Tiêu đề: "Câu [Số thứ tự]: [Phần dẫn/Tình huống chung]"
+             - Kẻ bảng 2 cột: Cột 1 tiêu đề "Nội dung" (chứa 4 dòng ý a, b, c, d); Cột 2 tiêu đề "Đúng/Sai" (các ô ở dưới để trống rỗng).
+             - TUYỆT ĐỐI KHÔNG điền đáp án Đ/S vào phần đề thi này.
+		* **Phần 2: Câu Trả lời ngắn**
+		- Số lượng câu hỏi bắt buộc phải khớp với ma trận và bản đặc tả
+		### YÊU CẦU ĐẶC BIỆT CHO PHẦN "TRẢ LỜI NGẮN" (STRICT CONCISENESS):
+		1. **Nguyên tắc "Siêu Ngắn" (Zero-Fluff Policy):**
 	   - Cắt bỏ hoàn toàn lời dẫn dắt, bối cảnh, giả định không cần thiết (Ví dụ: Bỏ "Trong phòng thí nghiệm...", bỏ "Một học sinh thực hiện thí nghiệm...").
 	   - **Cấu trúc bắt buộc:** "Cho [Dữ kiện]. Tính/Tìm [Yêu cầu]."
-	   - Độ dài tối đa: **Không quá 2 câu** hoặc **dưới 30 từ** cho mỗi câu hỏi.
-
-	2. **Ví dụ mẫu (Hãy làm theo phong cách này):**
+		2. **Ví dụ mẫu (Hãy làm theo phong cách này):**
 	   - *SAI (Quá dài):* "Một chiếc xe ô tô có khối lượng là 1000kg đang chuyển động trên đường thẳng với vận tốc 10m/s. Hãy tính động năng của xe."
 	   - *ĐÚNG (Chuẩn):* "Một ô tô 1000 kg chuyển động với tốc độ 10 m/s. Tính động năng của xe."
 	   - *ĐÚNG (Chuẩn):* "Tính pH của dung dịch HCl 0,01M."
-
-	3. **Định dạng đáp án (Nếu là điền khuyết):**
-   	- Câu hỏi phải được thiết kế để đáp án là một **con số cụ thể** hoặc một **từ/cụm từ duy nhất**. Không ra câu hỏi mở.
-	
-    # CẢNH BÁO
-			Nếu bạn vi phạm bất kỳ quy tắc nào ở trên (đặc biệt là việc lấy nhầm kiến thức lớp khác hoặc dùng thuật ngữ cũ), nội dung của bạn sẽ bị loại bỏ hoàn toàn.
-      
-      ### DỮ LIỆU MA TRẬN VÀ BẢN ĐẶC TẢ TỪ BƯỚC 1 (Cần bám sát tuyệt đối):
-      ${previous_html}
-
-      ### THÔNG TIN:
-      - Môn: ${subject} - Lớp ${grade} - Bộ sách: ${book_series}
-      - Cấu trúc: ${structureInfo}
-      - Hệ số: ${scoreDetails}
-
-      <hr>
-      <h2 style="color:blue">PHẦN 3: ĐỀ KIỂM TRA</h2>
-	  <h2 style="color:blue">MÔN:${subject} - Lớp ${grade}</h2>
-	  <h2 style="color:blue">Thời gian làm bài: 90 phút hoặc 45 phút</h2>
-	  
-       - Phải soạn đề thi dựa TRỰC TIẾP trên Ma trận và Bản đặc tả đã thiết lập ở trên.
-	   - **Số lượng câu hỏi:** Tổng số câu hỏi trong đề phải khớp 100% với tổng số câu trong Ma trận. Tuyệt đối không thừa, không thiếu.
-	   - **Phân bổ mức độ:** Mỗi câu hỏi phải tương ứng chính xác với mức độ (Nhận biết, Thông hiểu, Vận dụng) đã quy định cho từng chủ đề/nội dung.
-	   - **Kiểm tra chéo (Self-Audit):** Sau khi soạn xong mỗi câu, hãy đối chiếu lại: "Câu này thuộc chủ đề nào? Mức độ gì? Đã có trong ma trận chưa?". Nếu không khớp, phải sửa lại ngay.
-	   - Ghi rõ mã số hoặc mức độ đạt được bên cạnh mỗi câu hỏi (nếu ma trận yêu cầu).
-      - Đảm bảo đề thi có đúng ${grandTotal.rowSums.b + grandTotal.rowSums.h + grandTotal.rowSums.vd} câu hỏi khớp với ma trận.
-	  * Phân chia rõ ràng 2 phần: **I. TRẮC NGHIỆM KHÁCH QUAN** (7.0đ) và **II. TỰ LUẬN** (3.0đ).
-      * **Phần I:** Chia thành 3 tiểu mục
-                * **Phần 1 (MCQ):
-                * **Phần 2 (Đúng-Sai):** Thiết kế dạng 2 câu chùm (1 câu chùm gồm 4 câu con) và  **Kẻ bảng 2 cột: ý | Đúng/Sai.
-                * **Phần 3 (Trả lời ngắn): Chỉ ra
-      * **Phần II:**(Liệt kê câu hỏi tự luận). ghi rõ điểm số từng câu.
-            <h2 style="color:blue">PHẦN 3: **Phần III. ĐÁP ÁN VÀ THANG ĐIỂM**</h2>
+      **II. TỰ LUẬN**
+      - Liệt kê các câu tự luận, ghi rõ số điểm bên cạnh (Ví dụ: Câu 1 (1.0 điểm): ...).
+      ### OUTPUT YÊU CẦU 4: HƯỚNG DẪN CHẤM
+			<h2 style="color:blue">HƯỚNG DẪN CHẤM</h2>
        			* **Phần 1 (MCQ):** Bảng gồm 2 hàng:
 									Hàng 1: tiêu đề câu hỏi
 									Hàng 2: đáp án tương ứng
@@ -578,30 +552,25 @@ if (finalSolution) {
 									Từ cột 2 trở đi (số lượng thay đổi):
 									Hàng 1: đánh số câu tăng dần từ 1 → n
 									Hàng 2: mỗi ô chứa 1 chữ cái in hoa (A/B/C/D/…), là đáp án của câu phía trên
-                * **Phần 2 (Đúng-Sai):** Kẻ bảng chi tiết cho từng câu chùm (a-Đ, b-S...).
+                * **Phần 2 (Đúng-Sai):** Bảng 2 cột: "Nội dung" | "Đúng/Sai"
+										- Gồm 4 ý a), b), c), d)
+										- Ghi rõ đáp án
                 * **Phần 3 (Trả lời ngắn):** Liệt kê đáp án đúng.
                 * **Tự luận:** Kẻ bảng 3 cột (Câu | Nội dung/Đáp án chi tiết | Điểm).
-		**IV. QUY ĐỊNH KỸ THUẬT (BẮT BUỘC):**
+		*** QUY ĐỊNH KỸ THUẬT (BẮT BUỘC):**
 			1. **Định dạng:** Chỉ trả về mã **HTML Table** ('<table border="1">...</table>') cho các bảng.
             2. **Không dùng Markdown:** Tuyệt đối không dùng \`\`\`html\`\`\` hoặc |---| .
             3. **Xuống dòng (QUAN TRỌNG):**
                - Trong HTML, ký tự xuống dòng (\n) không có tác dụng. **BẮT BUỘC phải dùng thẻ '<br>'** để ngắt dòng.
                - **Tuyệt đối không** viết các đáp án nối liền nhau trên cùng một dòng.
             4. **Công thức Toán:** Sử dụng LaTeX chuẩn, bao quanh bởi dấu $$ (ví dụ: $$x^2 + \sqrt{5}$$). Không dùng MathML.               
-            5. **Định dạng Câu chùm (Đúng/Sai):**
-               - Nội dung lệnh hỏi <br>
-               - a) Nội dung ý a... <br>
-               - b) Nội dung ý b... <br>
-               - c) Nội dung ý c... <br>
-               - d) Nội dung ý d...
-           6. **Khoảng cách giữa các câu:** Giữa Câu 1 và Câu 2 (và các câu tiếp theo) phải có thêm một thẻ '<br>' hoặc dùng thẻ '<p>' bao quanh từng câu để tạo khoảng cách rõ ràng, dễ đọc.
+            5. **Khoảng cách giữa các câu:** Giữa Câu 1 và Câu 2 (và các câu tiếp theo) phải có thêm một thẻ '<br>' hoặc dùng thẻ '<p>' bao quanh từng câu để tạo khoảng cách rõ ràng, dễ đọc.
 	###**Trước khi trả lời, hãy dành thời gian phân tích nội bộ các bước logic, tự kiểm tra lỗi sai và trình bày luồng tư duy đó trước khi đưa ra kết quả cuối cùng*
 	##LƯU Ý QUAN TRỌNG VỀ TỐC ĐỘ:
 		- KHÔNG viết lời dẫn.
 		- KHÔNG giải thích lại ma trận.
 		- Tập trung vào nội dung đề thi ngay lập tức.
-      `;
-      }
+			   `;
 
       // 7. GỌI API QUA GATEWAY & LOGIC TRỪ TIỀN TỐI ƯU (CHẠY NGẦM)
       
