@@ -493,7 +493,7 @@ Sau bảng Ma trận, ngay lập tức thêm:
           // ============================================
           const genAI = new GoogleGenerativeAI(apiKey);
           const model = genAI.getGenerativeModel(
-            { model: 'gemini-2.5-pro' },
+            { model: 'gemini-3-flash-preview' },
             { baseUrl: 'https://gateway.ai.cloudflare.com/v1/a59c0991f0b291394bbe2fca8ba2694f/hien-demo/google-ai-studio' }
           );
 
@@ -645,7 +645,7 @@ Bạn là chuyên gia khảo thí hàng đầu Việt Nam. Dựa trên BẢN Đ�
          // ============================================
           const genAI2 = new GoogleGenerativeAI(apiKey);
           const model2 = genAI2.getGenerativeModel(
-            { model: 'gemini-3.1-pro' },
+            { model: 'gemini-3-flash-preview' },
             { baseUrl: 'https://gateway.ai.cloudflare.com/v1/a59c0991f0b291394bbe2fca8ba2694f/hien-demo/google-ai-studio' }
           );
 
