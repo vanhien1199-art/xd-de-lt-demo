@@ -455,7 +455,6 @@ Sau bảng Ma trận, ngay lập tức thêm:
 </tfoot>
 </table>
 
-### [CẢNH BÁO THÊM - Nền tảng BẢN ĐẶC TẢ]
 [TUÂN THỦ TUYỆT ĐỐI]
 1. **Ràng buộc Nguồn (Source-Grounded):**
    - CHỈ ĐƯỢC PHÉP sử dụng các khái niệm, dữ kiện từ bộ sách ${book_series} lớp ${grade}.
@@ -559,7 +558,7 @@ Sau bảng Ma trận, ngay lập tức thêm:
           const promptStep2 = `
 Bạn là chuyên gia khảo thí hàng đầu Việt Nam. Dựa trên BẢN ĐẶC TẢ và MA TRẬN đã cung cấp, bạn sẽ tạo ĐỀ KIỂM TRA và HƯỚNG DẪN CHẤM.
 ### BẢN ĐẶC TẢ ĐỀ (THAM CHIẾU) ${previous_html}
-[CẢNH BÁO: TUÂN THỰ 100% BẢN ĐẶC TẢ]
+[CẢNH BÁO: TUÂN THỦ 100% BẢN ĐẶC TẢ]
 1. Số lượng câu hỏi, loại câu, mức độ PHẢI KHỚP CHÍNH XÁC với Bản đặc tả đã cung cấp.
 2. Nếu Đặc tả ghi 2 câu MCQ mức Biết ở Bài A -> Đề thi BẮT BUỘC có đúng 2 câu đó.
 3. KHÔNG thêm bớt, KHÔNG sửa đổi.
@@ -576,7 +575,7 @@ Bạn là chuyên gia khảo thí hàng đầu Việt Nam. Dựa trên BẢN Đ�
 [Mỗi câu có 4 đáp án A/B/C/D]
 
 **Phần 2: Câu trắc nghiệm Đúng/Sai**
-[QUY TẮC BẮAT BUỘC:
+[QUY TẮC BẮT BUỘC:
 - CHỈ tạo chính xác 2 câu lớn (không tạo 4, không tạo 8).
 - MỖI câu lớn có chính xác 4 ý a), b), c), d).
 - GOM NHÓM kiến thức từ nhiều bài thành 2 tình huống chung.
@@ -591,7 +590,7 @@ Bạn là chuyên gia khảo thí hàng đầu Việt Nam. Dựa trên BẢN Đ�
 - Bảng 2 cột tương tự]
 
 **Phần 3: Câu Trả lời ngắn**
-[QUY TẮC BẮAT BUỘC:
+[QUY TẮC BẮT BUỘC:
 - Số lượng câu phải khớp ma trận.
 - Siêu ngắn: Cắt bỏ lời dẫn không cần thiết.
 - Cấu trúc: "Cho [Dữ kiện]. Tính/Tìm [Yêu cầu]."]
@@ -641,8 +640,11 @@ Bạn là chuyên gia khảo thí hàng đầu Việt Nam. Dựa trên BẢN Đ�
 
 **Tự luận:**
 [Bảng 3 cột: Câu | Nội dung/Đáp án chi tiết | Điểm]
-        
-          // ============================================
+
+[BẮAT ĐẦU NGAY - KO CÓ LỜI DẪN]
+          `;
+
+         // ============================================
           const genAI2 = new GoogleGenerativeAI(apiKey);
           const model2 = genAI2.getGenerativeModel(
             { model: 'gemini-2.5-pro' },
