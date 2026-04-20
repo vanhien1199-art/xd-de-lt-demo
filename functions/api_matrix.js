@@ -307,12 +307,16 @@ NHIỆM VỤ: Tạo CHỈNH XÁC 2 phần HTML:
 1. MA TRẬN ĐỀ KIỂM TRA (19 cột)
 2. BẢN ĐẶC TẢ ĐỀ (16 cột)
 
-[QUY TẮC TUYỆT ĐỐI - ĐỌC KỸ]
-1. KHÔNG bổ sung, KHÔNG sửa đổi số liệu dữ liệu đã tính. CHỈ lấy dữ liệu này điền vào bảng.
-2. MA TRẬN và ĐẶC TẢ phải KHỚP 100% về số lượng câu hỏi ở từng mức độ.
-3. KHÔNG BỎ SÓT một đơn vị kiến thức nào từ DỮ LIỆU ĐÃ TÍNH.
-4. Cột "Yêu cầu cần đạt" ở Đặc tả: CHỈ viết cho những mức độ có số lượng > 0. Dùng động từ tương ứng (Nêu được, Giải thích được, Tính toán được).
-5. Bắt đầu OUTPUT ngay bằng tag <h2> cho Ma trận, không có lời dẫn.
+**QUY TẮC BẤT DI BẤT DỊCH:**
+1. **TUYỆT ĐỐI KHÔNG TÍNH TOÁN LẠI:** Chỉ được phép lấy các con số trong phần "DỮ LIỆU ĐÃ TÍNH" để điền vào bảng.
+2. **QUAN HỆ CHẶT CHẼ (LOGIC DÂY CHUYỀN):**
+    - **Bản đặc tả (Phần 2)** phải khớp 100% số liệu với **Ma trận (Phần 1)**.
+    - (Ví dụ: Ma trận có 1 câu MCQ Biết bài A -> Đặc tả phải ghi hành vi Biết bài A).
+3. **KHÔNG** nói chuyện phím. Bắt đầu ngay bằng mã HTML.
+**NGUYÊN TẮC:**
+1. KHÔNG được dừng lại khi chưa hoàn thành đủ 2 phần.
+2. KHÔNG nói chuyện phím. Chỉ xuất HTML.
+3. Dùng số liệu ĐÃ TÍNH SẴN ở dưới, KHÔNG tự tính lại.
 
 ### DỮ LIỆU ĐÃ TÍNH:
 ${matrixRows}
