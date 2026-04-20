@@ -558,7 +558,7 @@ Sau bảng Ma trận, ngay lập tức thêm:
 
           const promptStep2 = `
 Bạn là chuyên gia khảo thí hàng đầu Việt Nam. Dựa trên BẢN ĐẶC TẢ và MA TRẬN đã cung cấp, bạn sẽ tạo ĐỀ KIỂM TRA và HƯỚNG DẪN CHẤM.
-
+### BẢN ĐẶC TẢ ĐỀ (THAM CHIẾU) ${previous_html}
 [CẢNH BÁO: TUÂN THỰ 100% BẢN ĐẶC TẢ]
 1. Số lượng câu hỏi, loại câu, mức độ PHẢI KHỚP CHÍNH XÁC với Bản đặc tả đã cung cấp.
 2. Nếu Đặc tả ghi 2 câu MCQ mức Biết ở Bài A -> Đề thi BẮT BUỘC có đúng 2 câu đó.
