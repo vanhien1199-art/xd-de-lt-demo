@@ -313,11 +313,11 @@ NHIỆM VỤ: Tạo CHỈNH XÁC 2 phần HTML:
     - **Bản đặc tả (Phần 2)** phải khớp 100% số liệu với **Ma trận (Phần 1)**.
     - (Ví dụ: Ma trận có 1 câu MCQ Biết bài A -> Đặc tả phải ghi hành vi Biết bài A).
 3. **KHÔNG** nói chuyện phím. Bắt đầu ngay bằng mã HTML.
-**NGUYÊN TẮC:**
-1. KHÔNG được dừng lại khi chưa hoàn thành đủ 2 phần.
-2. KHÔNG nói chuyện phím. Chỉ xuất HTML.
-3. Dùng số liệu ĐÃ TÍNH SẴN ở dưới, KHÔNG tự tính lại.
-
+4. KHÔNG được dừng lại khi chưa hoàn thành đủ 2 phần.
+##LƯU Ý QUAN TRỌNG VỀ TỐC ĐỘ:
+		- KHÔNG viết lời dẫn.
+		- KHÔNG giải thích ma trận.
+		- Tập trung vào nội dung ngay lập tức.
 ### DỮ LIỆU ĐÃ TÍNH:
 ${matrixRows}
 
