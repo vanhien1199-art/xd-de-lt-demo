@@ -455,7 +455,7 @@ Sau bảng Ma trận, ngay lập tức thêm:
 </tfoot>
 </table>
 
-### [CẢNH BÁO THÊM - NỀU TẠNG BẢN ĐẶC TẢ]
+### [CẢNH BÁO THÊM - Nền tảng BẢN ĐẶC TẢ]
 [TUÂN THỦ TUYỆT ĐỐI]
 1. **Ràng buộc Nguồn (Source-Grounded):**
    - CHỈ ĐƯỢC PHÉP sử dụng các khái niệm, dữ kiện từ bộ sách ${book_series} lớp ${grade}.
@@ -641,15 +641,7 @@ Bạn là chuyên gia khảo thí hàng đầu Việt Nam. Dựa trên BẢN Đ�
 
 **Tự luận:**
 [Bảng 3 cột: Câu | Nội dung/Đáp án chi tiết | Điểm]
-
-### BẢN ĐẶC TẢ ĐỀ (THAM CHIẾU)
-${previous_html}
-
-[BẮAT ĐẦU NGAY - KO CÓ LỜI DẪN]
-          `;
-
-          // ============================================
-          // GỌI API STEP 2
+        
           // ============================================
           const genAI2 = new GoogleGenerativeAI(apiKey);
           const model2 = genAI2.getGenerativeModel(
